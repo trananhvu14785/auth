@@ -1,0 +1,21 @@
+server:
+  port: 8089
+  shutdown: graceful
+  undertow:
+    threads:
+      io: 100
+      worker: 1000
+
+spring:
+  application:
+    name: auth
+  datasource:
+    url: jdbc:postgresql://localhost:5432/auth
+    username: postgres
+    password: 1
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+      idle-timeout: 30000
+      pool-name: HikariCP
