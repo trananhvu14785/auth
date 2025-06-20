@@ -19,3 +19,7 @@ spring:
       minimum-idle: 2
       idle-timeout: 30000
       pool-name: HikariCP
+
+jwt:
+  duration: 604800
+  secret: 4An32HWrMUxVr0TH6ZrV6p+g/cT8KCwz34w7h7FdTc6h8mbIvAygs5DcfeiDtqFKm84/t4OeifghoVCBuymmtQ==
