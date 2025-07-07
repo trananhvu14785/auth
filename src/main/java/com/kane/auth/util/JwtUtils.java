@@ -22,6 +22,8 @@ public class JwtUtils {
     @Value("${jwt.duration}")
     private long jwtDuration;
 
+    @Value("${jwt.refresh-duration}")
+
     public String generateToken(final CustomUserDetails user) {
         Map<String, Object> claims = new HashMap<>();
         var expirationMillis = new Date(System.currentTimeMillis() + jwtDuration * 1000);

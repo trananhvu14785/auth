@@ -22,33 +22,34 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfiguration {
-    private static final String[] WHITELIST = {"/auth/**" };
+    private static final String[] WHITELIST = {"/auth/**"};
     private final JwtAuthenticationFilter jwtRequsetFilter;
     private final UserDetailsService userDetailsService;
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
     @Lazy
-    public SecurityConfiguration(JwtAuthenticationFilter jwtRequsetFilter, UserDetailsService userDetailsService,
+    public SecurityConfiguration(JwtAuthenticationFilter jwtRequestFilter, UserDetailsService userDetailsService,
                                  CustomAccessDeniedHandler customAccessDeniedHandler, CustomAuthenticationEntryPoint customAuthenticationEntryPoint) {
-        this.jwtRequsetFilter = jwtRequsetFilter;
+        this.jwtRequsetFilter = jwtRequestFilter;
         this.userDetailsService = userDetailsService;
         this.customAccessDeniedHandler = customAccessDeniedHandler;
         this.customAuthenticationEntryPoint = customAuthenticationEntryPoint;
     }
 
+    // Cung cấp AuthenticationManager để xác thực người dùng
     @Bean
     AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
     @Bean
-    PasswordEncoder passwordEncoder() {
+    PasswordEncoder passwordEncoder() { // Sử dụng BCryptPasswordEncoder để mã hóa mật khẩu
         return new BCryptPasswordEncoder();
     }
 
     @Bean
-    AuthenticationProvider authenticationProvider() {
+    AuthenticationProvider authenticationProvider() { // Cung cấp AuthenticationProvider để xác thực người dùng
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
         authProvider.setUserDetailsService(this.userDetailsService);
         authProvider.setPasswordEncoder(this.passwordEncoder());
@@ -57,7 +58,7 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception { // Cấu hình bảo mật cho ứng dụng
         http.csrf(AbstractHttpConfigurer::disable);
 
         http.authorizeHttpRequests(

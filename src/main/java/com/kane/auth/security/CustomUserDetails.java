@@ -18,7 +18,7 @@ public class CustomUserDetails implements UserDetails {
     private static final long serialVersionUID = 1L;
     private final String username;
     private final String password;
-    private final Set<GrantedAuthority> authorities;
+    private final Set<GrantedAuthority> authorities; // xác định quyền hạn của người dùng bằng GrantedAuthority
     private final Set<Privilege> roles;
 
     public CustomUserDetails(final UserAccount userAccount) {

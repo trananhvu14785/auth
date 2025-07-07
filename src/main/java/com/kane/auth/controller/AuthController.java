@@ -2,20 +2,20 @@ package com.kane.auth.controller;
 
 import com.kane.auth.Mapper.UserAccountMapper;
 import com.kane.auth.Service.UserAccountService;
+//import com.kane.auth.dto.request.SignUpRequest;
+//import com.kane.auth.dto.response.SignInResponse;
 import com.kane.auth.dto.request.SignUpRequest;
 import com.kane.auth.dto.response.SignInResponse;
 import com.kane.auth.model.UserAccount;
 import com.kane.auth.security.CustomUserDetails;
 import com.kane.auth.util.JwtUtils;
+import com.kane.common.dto.request.SignInRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 
@@ -42,10 +42,10 @@ public class AuthController {
     }
 
     @PostMapping("/signIn")
-    public ResponseEntity<SignInResponse> signIn(@RequestBody SignUpRequest signUpRequest) {
+    public ResponseEntity<SignInResponse> signIn(@RequestBody SignInRequest signIpRequest) {
         try {
             Authentication authentication = this.authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(signUpRequest.getUsername(), signUpRequest.getPassword())
+                    new UsernamePasswordAuthenticationToken(signIpRequest.getUsername(), signIpRequest.getPassword())
             );
 
             CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
@@ -59,5 +59,10 @@ public class AuthController {
         } catch (Exception e) {
             throw new RuntimeException("Invalid username or password", e);
         }
+    }
+
+    @GetMapping("/hello")
+    public String hello() {
+        return "Hello from Auth Service";
     }
 }
