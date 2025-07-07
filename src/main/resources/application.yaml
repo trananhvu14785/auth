@@ -12,10 +12,21 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/auth
     username: postgres
-    password: 1
+    password: Hieu2004@
     driver-class-name: org.postgresql.Driver
     hikari:
       maximum-pool-size: 10
       minimum-idle: 2
       idle-timeout: 30000
       pool-name: HikariCP
+
+jwt:
+  duration: 900 # 15 minutes
+  secret: 4An32HWrMUxVr0TH6ZrV6p+g/cT8KCwz34w7h7FdTc6h8mbIvAygs5DcfeiDtqFKm84/t4OeifghoVCBuymmtQ==
+  refresh-duration: 604800 # 7 days
+
+logging:
+  level:
+    org.springframework.http.converter.json.MappingJackson2HttpMessageConverter: DEBUG
+    org.springframework.web: DEBUG
+    org.springframework.web.servlet.mvc.method.annotation: DEBUG
