@@ -8,6 +8,7 @@ import com.kane.auth.dto.request.SignUpRequest;
 import com.kane.auth.dto.response.SignInResponse;
 import com.kane.auth.model.UserAccount;
 import com.kane.auth.security.CustomUserDetails;
+import com.kane.auth.security.CustomUserDetailsService;
 import com.kane.auth.util.JwtUtils;
 import com.kane.common.dto.request.SignInRequest;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,7 @@ public class AuthController {
     private final UserAccountService userAccountService;
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
+    private final CustomUserDetailsService customUserDetailsService;
 
 //    public AuthController(UserAccountService userAccountService) {
 //        this.userAccountService = userAccountService;
@@ -79,7 +81,7 @@ public class AuthController {
         }
 
         String username = jwtUtils.extractUsername(refreshToken);
-        var userDetails =  userAccountService.findByUsername(username);
+        var userDetails =  customUserDetailsService.loadUserByUserName(username);
         var newAccessToken = jwtUtils.generateToken(userDetails);
 
         return ResponseEntity.ok(Map.of("token", newAccessToken));

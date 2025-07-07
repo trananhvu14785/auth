@@ -20,4 +20,11 @@ public class CustomUserDetailsService implements UserDetailsService {
 
         return new CustomUserDetails(userAccount);
     }
+
+    public CustomUserDetails loadUserByUserName(String username) throws UsernameNotFoundException {
+        UserAccount userAccount = this.userAccountRepo.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Cannot find user with username: " + username));
+
+        return new CustomUserDetails(userAccount);
+    }
 }
