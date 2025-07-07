@@ -11,13 +11,16 @@ import com.kane.auth.security.CustomUserDetails;
 import com.kane.auth.util.JwtUtils;
 import com.kane.common.dto.request.SignInRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
+import java.util.Map;
 
 @RestController
 @RequestMapping(path = "/auth")
@@ -52,8 +55,10 @@ public class AuthController {
 
             String accessToken = this.jwtUtils.generateToken(userDetails);
             Date expiredDate = this.jwtUtils.extractExpiration(accessToken);
+            String refreshToken = this.jwtUtils.generateRefreshToken(userDetails);
             return ResponseEntity.ok(SignInResponse.builder()
                     .token(accessToken)
+                    .refreshToken(refreshToken)
                     .expiredDate(expiredDate)
                     .build());
         } catch (Exception e) {
@@ -64,5 +69,19 @@ public class AuthController {
     @GetMapping("/hello")
     public String hello() {
         return "Hello from Auth Service";
+    }
+
+    @PostMapping("/refreshToken")
+    public  ResponseEntity<?> refeshToken(@RequestBody Map<String, String> request) {
+        String refreshToken = request.get("refreshToken");
+        if (!StringUtils.hasText(refreshToken) || jwtUtils.isTokenExpired(refreshToken)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Refresh token is invalid or expired");
+        }
+
+        String username = jwtUtils.extractUsername(refreshToken);
+        var userDetails =  userAccountService.findByUsername(username);
+        var newAccessToken = jwtUtils.generateToken(userDetails);
+
+        return ResponseEntity.ok(Map.of("token", newAccessToken));
     }
 }

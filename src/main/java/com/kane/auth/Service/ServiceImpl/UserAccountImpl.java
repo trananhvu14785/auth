@@ -57,4 +57,10 @@ public class UserAccountImpl implements UserAccountService {
         this.userAccountRepo.save(userAccount);
         return true;
     }
+
+    @Override
+    public UserAccount findByUsername(String username) {
+        return this.userAccountRepo.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Cannot find user with username: " + username));
+    }
 }

@@ -23,6 +23,7 @@ public class JwtUtils {
     private long jwtDuration;
 
     @Value("${jwt.refresh-duration}")
+    private long refreshTokenDuration;
 
     public String generateToken(final CustomUserDetails user) {
         Map<String, Object> claims = new HashMap<>();
@@ -66,5 +67,18 @@ public class JwtUtils {
 
     public boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
+    }
+
+    public String generateRefreshToken(final CustomUserDetails user) {
+        Map<String, Object> claims = new HashMap<>();
+        Date expirationMillis = new Date(System.currentTimeMillis() + refreshTokenDuration  * 1000);
+
+        return Jwts.builder()
+                .claims(claims)
+                .subject(user.getUsername())
+                .issuedAt(new Date())
+                .expiration(expirationMillis)
+                .signWith(this.getSigningKey())
+                .compact();
     }
 }

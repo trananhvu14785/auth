@@ -11,5 +11,6 @@ import java.util.Date;
 @Builder
 public class SignInResponse {
     private String token;
+    private String refreshToken;
     private Date expiredDate;
 }
