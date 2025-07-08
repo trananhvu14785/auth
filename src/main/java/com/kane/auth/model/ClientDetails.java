@@ -10,32 +10,32 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 public class ClientDetails {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Integer id;
 
-    @Column(name = "client_id")
-    private String clientId;
+  @Column(name = "client_id")
+  private String clientId;
 
-    @Column(name = "client_secret")
-    private String clientSecret;
+  @Column(name = "client_secret")
+  private String clientSecret;
 
-    @Column(name = "grant_types")
-    private String grantTypes;
+  @Column(name = "grant_types")
+  private String grantTypes;
 
-    private String scopes;
+  private String scopes;
 
-    private String resources;
+  private String resources;
 
-    @Column(name = "redirect_uris")
-    private String redirectUris;
+  @Column(name = "redirect_uris")
+  private String redirectUris;
 
-    @Column(name = "access_token_validity")
-    private Integer accessTokenValidity;
+  @Column(name = "access_token_validity")
+  private Integer accessTokenValidity;
 
-    @Column(name = "refresh_token_validity")
-    private Integer refreshTokenValidity;
+  @Column(name = "refresh_token_validity")
+  private Integer refreshTokenValidity;
 
-    @Column(name = "secret_required")
-    private Boolean secretRequired;
+  @Column(name = "secret_required")
+  private Boolean secretRequired;
 }
