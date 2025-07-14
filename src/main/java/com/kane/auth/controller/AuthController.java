@@ -28,14 +28,6 @@ public class AuthController {
   private final AuthenticationManager authenticationManager;
   private final JwtUtils jwtUtils;
 
-  //    public AuthController(UserAccountService userAccountService) {
-  //        this.userAccountService = userAccountService;
-  //    }
-  //    @PostMapping("/auth")
-  //    public ResponseEntity<String> auth() {
-  //        return ResponseEntity.ok("This is auth service");
-  //    }
-
   @PostMapping("/signUp")
   public SuccessResponse<Boolean> signUp(@RequestBody SignUpRequest signUpRequest) {
     UserAccount userAccount = UserAccountMapper.INSTANCE.toUserAccount(signUpRequest);
