@@ -12,6 +12,8 @@ import com.kane.common.exception.NoFoundException;
 import com.kane.common.response.SuccessResponse;
 import feign.FeignException;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -84,9 +86,20 @@ public class UserAccountImpl implements UserAccountService {
   }
 
   @Override
-  public UserAccount findByUsername(String username) {
-    return this.userAccountRepo
-        .findByUsername(username)
-        .orElseThrow(() -> new RuntimeException("Cannot find user with username: " + username));
+  public Optional<UserAccount> findByUsername(String username) {
+    return this.userAccountRepo.findByUsername(username);
+  }
+
+  @Override
+  public List<UserAccount> findAll() {
+    List<UserAccount> list = userAccountRepo.findAll();
+    for (UserAccount user : list) {
+      log.info("UserAccount: username={}, active={}, profileId={}",
+              user.getUsername(),
+              user.getActive(),
+              user.getProfile() != null ? user.getProfile().getId() : null
+      );
+    }
+    return list;
   }
 }

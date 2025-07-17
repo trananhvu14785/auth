@@ -1,5 +1,6 @@
 package com.kane.auth.Mapper;
 
+import com.kane.auth.dto.response.UserAccountResponse;
 import com.kane.auth.model.UserAccount;
 import com.kane.common.dto.request.SignUpRequest;
 import org.mapstruct.Mapper;
@@ -12,4 +13,6 @@ public interface UserAccountMapper {
 
   @Mapping(source = "nameProfile", target = "profile.name")
   UserAccount toUserAccount(final SignUpRequest userAccount);
+
+  UserAccountResponse toDTO(final UserAccount userAccount);
 }
