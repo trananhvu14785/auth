@@ -94,11 +94,11 @@ public class UserAccountImpl implements UserAccountService {
   public List<UserAccount> findAll() {
     List<UserAccount> list = userAccountRepo.findAll();
     for (UserAccount user : list) {
-      log.info("UserAccount: username={}, active={}, profileId={}",
-              user.getUsername(),
-              user.getActive(),
-              user.getProfile() != null ? user.getProfile().getId() : null
-      );
+      log.info(
+          "UserAccount: username={}, active={}, profileId={}",
+          user.getUsername(),
+          user.getActive(),
+          user.getProfile() != null ? user.getProfile().getId() : null);
     }
     return list;
   }
