@@ -37,23 +37,9 @@ public class AuthController {
 
   @PostMapping("/signIn")
   public ResponseEntity<SignInResponse> signIn(@RequestBody SignInRequest signIpRequest) {
+    log.info("signIn request: {}", signIpRequest);
     return ResponseEntity.ok(authService.signIn(signIpRequest));
   }
-
-  //  @PostMapping("/refreshToken")
-  //  public ResponseEntity<?> refreshToken(@RequestBody Map<String, String> request) {
-  //    String refreshToken = request.get("refreshToken");
-  //    if (!StringUtils.hasText(refreshToken) || jwtUtils.isTokenExpired(refreshToken)) {
-  //      return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-  //          .body("Refresh token is invalid or expired");
-  //    }
-  //
-  //
-  //    String username = jwtUtils.extractUsername(refreshToken);
-  //    String newAccessToken = jwtUtils.generateToken(username);
-  //
-  //    return ResponseEntity.ok(Map.of("token", newAccessToken));
-  //  }
 
   @GetMapping("/{username}")
   public ResponseEntity<UserAccountResponse> getUserAccount(

@@ -18,7 +18,7 @@ public class CustomUserDetails implements UserDetails {
   private final String username;
   private final String password;
   private final Set<GrantedAuthority>
-      authorities; // xác định quyền hạn của người dùng bằng GrantedAuthority
+      authorities; // This will hold the privileges of the user
   private final Set<Privilege> roles;
 
   public CustomUserDetails(final UserAccount userAccount) {
@@ -36,7 +36,7 @@ public class CustomUserDetails implements UserDetails {
             .collect(java.util.stream.Collectors.toSet());
   }
 
-  // Override lại các phương thức từ interface UserDetails của Spring Security
+  // Override methods from UserDetails interface
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
