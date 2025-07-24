@@ -1,87 +1,79 @@
 package com.kane.auth.controller;
 
 import com.kane.auth.Mapper.UserAccountMapper;
+import com.kane.auth.Service.AuthService;
 import com.kane.auth.Service.UserAccountService;
-//import com.kane.auth.dto.request.SignUpRequest;
-//import com.kane.auth.dto.response.SignInResponse;
-import com.kane.auth.dto.request.SignUpRequest;
-import com.kane.auth.dto.response.SignInResponse;
+import com.kane.auth.dto.response.UserAccountResponse;
 import com.kane.auth.model.UserAccount;
-import com.kane.auth.security.CustomUserDetails;
-import com.kane.auth.util.JwtUtils;
 import com.kane.common.dto.request.SignInRequest;
+import com.kane.common.dto.request.SignUpRequest;
+import com.kane.common.dto.response.SignInResponse;
+import com.kane.common.exception.AccessDeniedCustomException;
+import com.kane.common.util.JwtUtils;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
-import java.util.Map;
-
+@Slf4j
 @RestController
 @RequestMapping(path = "/auth")
 @RequiredArgsConstructor
 public class AuthController {
-    private final UserAccountService userAccountService;
-    private final AuthenticationManager authenticationManager;
-    private final JwtUtils jwtUtils;
+  private final UserAccountService userAccountService;
+  private final AuthenticationManager authenticationManager;
+  private final JwtUtils jwtUtils;
+  private final AuthService authService;
 
-//    public AuthController(UserAccountService userAccountService) {
-//        this.userAccountService = userAccountService;
-//    }
-    //    @PostMapping("/auth")
-//    public ResponseEntity<String> auth() {
-//        return ResponseEntity.ok("This is auth service");
-//    }
+  @PostMapping("/signUp")
+  public ResponseEntity<Boolean> signUp(@RequestBody SignUpRequest signUpRequest) {
+    UserAccount userAccount = UserAccountMapper.INSTANCE.toUserAccount(signUpRequest);
+    return ResponseEntity.ok(this.userAccountService.save(userAccount));
+  }
 
-    @PostMapping("/signUp")
-    public ResponseEntity<Boolean> signUp(@RequestBody SignUpRequest signUpRequest) {
-        UserAccount userAccount = UserAccountMapper.INSTANCE.toUserAccount(signUpRequest);
-        return ResponseEntity.ok(this.userAccountService.save(userAccount));
+  @PostMapping("/signIn")
+  public ResponseEntity<SignInResponse> signIn(@RequestBody SignInRequest signIpRequest) {
+    log.info("signIn request: {}", signIpRequest);
+    return ResponseEntity.ok(authService.signIn(signIpRequest));
+  }
+
+  @GetMapping("/{username}")
+  public ResponseEntity<UserAccountResponse> getUserAccount(
+      @PathVariable String username, Authentication authentication) {
+    log.info("get user account {}", username);
+    String currentUsername = authentication.getName();
+    log.info("current username {}", currentUsername);
+    boolean isAdmin =
+        authentication.getAuthorities().stream()
+            .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
+
+    if (!isAdmin && !username.equals(currentUsername)) {
+      throw new AccessDeniedCustomException("You do not have permission to access this resource.");
     }
 
-    @PostMapping("/signIn")
-    public ResponseEntity<SignInResponse> signIn(@RequestBody SignInRequest signIpRequest) {
-        try {
-            Authentication authentication = this.authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(signIpRequest.getUsername(), signIpRequest.getPassword())
-            );
+    UserAccount userAccount =
+        userAccountService
+            .findByUsername(username)
+            .orElseThrow(() -> new RuntimeException("User not found with username: " + username));
 
-            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+    return ResponseEntity.ok(UserAccountMapper.INSTANCE.toDTO(userAccount));
+  }
 
-            String accessToken = this.jwtUtils.generateToken(userDetails);
-            Date expiredDate = this.jwtUtils.extractExpiration(accessToken);
-            String refreshToken = this.jwtUtils.generateRefreshToken(userDetails);
-            return ResponseEntity.ok(SignInResponse.builder()
-                    .token(accessToken)
-                    .refreshToken(refreshToken)
-                    .expiredDate(expiredDate)
-                    .build());
-        } catch (Exception e) {
-            throw new RuntimeException("Invalid username or password", e);
-        }
-    }
+  @GetMapping
+  @PreAuthorize("hasRole('ADMIN')")
+  public ResponseEntity<List<UserAccountResponse>> getAllUserAccounts() {
+    List<UserAccount> userAccounts = userAccountService.findAll();
+    log.info("getAllUserAccounts: {}", userAccounts);
+    List<UserAccountResponse> userAccountResponses =
+        userAccounts.stream()
+            .map(UserAccountMapper.INSTANCE::toDTO)
+            .peek(dto -> log.info("DTO: {}", dto))
+            .toList();
 
-    @GetMapping("/hello")
-    public String hello() {
-        return "Hello from Auth Service";
-    }
-
-    @PostMapping("/refreshToken")
-    public  ResponseEntity<?> refeshToken(@RequestBody Map<String, String> request) {
-        String refreshToken = request.get("refreshToken");
-        if (!StringUtils.hasText(refreshToken) || jwtUtils.isTokenExpired(refreshToken)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Refresh token is invalid or expired");
-        }
-
-        String username = jwtUtils.extractUsername(refreshToken);
-        var userDetails =  userAccountService.findByUsername(username);
-        var newAccessToken = jwtUtils.generateToken(userDetails);
-
-        return ResponseEntity.ok(Map.of("token", newAccessToken));
-    }
+    return ResponseEntity.ok(userAccountResponses);
+  }
 }

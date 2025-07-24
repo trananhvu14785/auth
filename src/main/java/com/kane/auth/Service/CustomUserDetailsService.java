@@ -1,4 +1,4 @@
-package com.kane.auth.security;
+package com.kane.auth.Service;
 
 import com.kane.auth.model.UserAccount;
 import com.kane.auth.repository.UserAccountRepo;
@@ -11,13 +11,16 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
-    private final UserAccountRepo userAccountRepo;
+  private final UserAccountRepo userAccountRepo;
 
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        UserAccount userAccount = this.userAccountRepo.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Cannot find user with username: " + username));
+  @Override
+  public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    UserAccount userAccount =
+        userAccountRepo
+            .findByUsername(username)
+            .orElseThrow(
+                () -> new UsernameNotFoundException("Cannot find user with userName: " + username));
 
-        return new CustomUserDetails(userAccount);
-    }
+    return new CustomUserDetails(userAccount);
+  }
 }

@@ -6,6 +6,9 @@ server:
       io: 100
       worker: 1000
 
+customer-service:
+  url: http://localhost:8082
+
 spring:
   application:
     name: auth
@@ -24,9 +27,3 @@ jwt:
   duration: 900 # 15 minutes
   secret: 4An32HWrMUxVr0TH6ZrV6p+g/cT8KCwz34w7h7FdTc6h8mbIvAygs5DcfeiDtqFKm84/t4OeifghoVCBuymmtQ==
   refresh-duration: 604800 # 7 days
-
-logging:
-  level:
-    org.springframework.http.converter.json.MappingJackson2HttpMessageConverter: DEBUG
-    org.springframework.web: DEBUG
-    org.springframework.web.servlet.mvc.method.annotation: DEBUG

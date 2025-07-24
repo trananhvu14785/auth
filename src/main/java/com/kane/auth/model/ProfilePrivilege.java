@@ -10,16 +10,15 @@ import lombok.*;
 @Builder
 @Entity(name = "profile_privilege")
 public class ProfilePrivilege {
-    @EmbeddedId
-    private ProfilePrivilegeKey key;
+  @EmbeddedId private ProfilePrivilegeKey key;
 
-    @ManyToOne
-    @MapsId("profileId")
-    @JoinColumn(name = "profile_id")
-    private Profile profile;
+  @ManyToOne
+  @MapsId("profileId")
+  @JoinColumn(name = "profile_id")
+  private Profile profile;
 
-    @ManyToOne
-    @MapsId("privilegeId")
-    @JoinColumn(name = "privilege_id")
-    private Privilege privilege;
+  @ManyToOne
+  @MapsId("privilegeId")
+  @JoinColumn(name = "privilege_id")
+  private Privilege privilege;
 }
