@@ -50,7 +50,9 @@ public class AuthController {
     boolean isAdmin =
         authentication.getAuthorities().stream()
             .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
+    log.info("isAdmin: {}", isAdmin);
 
+    // If your role is admin and you want to access other people's information, you can't.
     if (!isAdmin && !username.equals(currentUsername)) {
       throw new AccessDeniedCustomException("You do not have permission to access this resource.");
     }
