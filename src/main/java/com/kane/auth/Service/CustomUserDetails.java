@@ -17,8 +17,7 @@ public class CustomUserDetails implements UserDetails {
   private static final long serialVersionUID = 1L;
   private final String username;
   private final String password;
-  private final Set<GrantedAuthority>
-      authorities; // This will hold the privileges of the user
+  private final Set<GrantedAuthority> authorities; // This will hold the privileges of the user
   private final Set<Privilege> roles;
 
   public CustomUserDetails(final UserAccount userAccount) {
