@@ -1,7 +1,9 @@
 package com.kane.auth.Service.ServiceImpl;
 
 import com.kane.auth.Service.UserAccountService;
+import com.kane.auth.dto.UserRegisteredEvent;
 import com.kane.auth.infra.client.CustomerClient;
+import com.kane.auth.infra.client.MessageClient;
 import com.kane.auth.model.*;
 import com.kane.auth.repository.PrivilegeRepo;
 import com.kane.auth.repository.UserAccountRepo;
@@ -27,6 +29,7 @@ public class UserAccountImpl implements UserAccountService {
   private final UserAccountRepo userAccountRepo;
   private final PrivilegeRepo privilegeRepo;
   private final PasswordEncoder passwordEncoder;
+  private final MessageClient messageClient;
 
   //    Logger logger = Logger.getLogger(UserAccountImpl.class.getName());
 
@@ -78,6 +81,12 @@ public class UserAccountImpl implements UserAccountService {
       userProfile.getProfilePrivileges().add(profilePrivilege);
 
       this.userAccountRepo.save(userAccount);
+      UserRegisteredEvent event =
+          new UserRegisteredEvent(
+              userAccount.getId(), userAccount.getUsername(), userAccount.getName());
+      log.info("Call message service with Email: {}", event.getEmail());
+      messageClient.event(event);
+
       return true;
     } catch (FeignException.NotFound ex) {
       throw new NoFoundException("Customer with email " + userAccount.getUsername() + " not found");
